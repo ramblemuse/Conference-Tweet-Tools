@@ -13,7 +13,7 @@
 #   tweets as a comma separated value (CSV) file that can easily be imported
 #   into Excel.
 #
-#   Minumum input usage: python getHash.py #hashtag
+#   Minumum input usage: python getConfHashtag.py #hashtag
 #
 #   options:
 #       -h | --help   Print help information
@@ -50,7 +50,7 @@ import base64
 
 
 # This app's registered name with Twitter
-myName = 'getHash4CSV'
+myName = 'getConfHashtag'
 
 
 def mapKey(key, enc):
