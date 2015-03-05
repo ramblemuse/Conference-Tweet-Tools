@@ -173,7 +173,7 @@ def main(argv=None):
             # Maximum count for a search request is 100. This loop starts with
             # the most recent matches and steps back in time by using the oldest
             # tweet in the returns as the next "upper" limit on the tweet ID. On
-            # each iteration the new group of tweets extend a cumulative list.
+            # each iteration the new group of tweets extends a cumulative list.
 
             returns = api.search.tweets(q=hashtag, count=100, max_id=upper)
             group   = returns['statuses']
@@ -186,7 +186,7 @@ def main(argv=None):
             upper = group[len(group)-1]['id']
 
             # Twitter rate limit for searches is 180 calls/ 15 minutes
-            time.sleep(0.2)
+            time.sleep(0.25)
 
     print '{} tweets'.format(total)
 
@@ -207,7 +207,7 @@ def main(argv=None):
     if outputCSV :
         print 'Writing CSV file {}'.format(csvFilename)
 
-        re_lflf  = re.compile("\n+")
+        re_crlf  = re.compile("\n|\r+")
         re_dquo  = re.compile(r'"')
 
         with codecs.open(csvFilename, mode='w', encoding='utf-8') as out :
@@ -216,7 +216,7 @@ def main(argv=None):
                 id     = tweet['id']
                 when   = tweet['created_at']
 
-                # User is a structure within a tween that contains
+                # User is a structure within a tweet that contains
                 # the poster's screen name and full name.
                 user   = tweet['user']
                 name   = unicode(user['name'])
@@ -240,7 +240,7 @@ def main(argv=None):
                 # and enclose in double quotes to protect any internal commas.
                 text = unicode(tweet['text'])
                 text = re_dquo.sub(r'""', text)
-                text = re_lflf.sub(r' ', text)
+                text = re_crlf.sub(r' ', text)
                 text = '"' + text + '"'
 
                 out.write('%d,%s,%s,%s,%d,%d,%s\n' % (id, screen, name, when, rts, favs, text))
