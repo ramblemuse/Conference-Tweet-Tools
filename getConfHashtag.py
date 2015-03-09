@@ -20,6 +20,7 @@
 #       -p | --pickle PICKLE-FILENAME
 #       -c | --csv    CSV-FILENAME
 #       -j | --json   JSON-FILENAME
+#       -l | --lower  Set lower limit on tweet ID's
 #       -n | --notice COUNT (default progress notice every 100 tweets)
 #       -s | --sort   Sort the tweets in descending tweet ID
 #       --nocsv       No CSV output (default is output)
@@ -32,7 +33,14 @@
 #   as a basename. For input from a previously created pickle file, no search
 #   is done and the given hashtag is still used for an output file basename.
 #
+#   Lower and upper limits on tweet ID's are non-inclusive. The lower argument
+#   is provided to only fetch tweets since a prior tweet search.
+#
 #   Keith Eric Grant (keg@ramblemuse.com)
+#   Sat, 08 March 2015
+#       Added 'lower' argument on tweet IDs
+#       Corrected default on the 'sort' argument
+#		Now write tweet ID in CSV using 'id_str" field rather than 'id'
 #   Tue, 03 March 2015
 #
 # *****************************************************************************
@@ -97,19 +105,20 @@ def main(argv=None):
     parser = argparse.ArgumentParser(
         prog=myName,
         description='Parse hashtag and ouput options',
-        version='1.0.0')
+        version='1.0.1')
     parser.add_argument('hashtag', help='hashtag to search for, including #')
     parser.add_argument('--pickle', '-p', action='store', dest='pickle', help='Pickle output file name')
     parser.add_argument('--csv',    '-c', action='store', dest='csv', help='CSV output file name')
     parser.add_argument('--json',   '-j', action='store', dest='json', help='JSON output file name')
-    parser.add_argument('--notice', '-n', action="store", dest='notice',type=int, default=100, help='Print processing count every n tweets')
+    parser.add_argument('--lower',  '-l', action='store', dest='lower',  type=int, default = 0, help='Set lower limit on tweet IDs')
+    parser.add_argument('--notice', '-n', action="store", dest='notice', type=int, default=100, help='Print processing count every n tweets')
     parser.add_argument('--nocsv',    action='store_true', default=False, help='No csv output')
     parser.add_argument('--nojson',   action='store_true', default=False, help='No JSON output')
     parser.add_argument('--nopickle', action='store_true', default=False, help='No pickle output')
     parser.add_argument('--nonotice', action='store_true', default=False, help='No processing count notices')
     parser.add_argument('--injson',   action='store', help='Load specified JSON file instead of search')
     parser.add_argument('--inpickle', action='store', help='Load specified pickle file instead of search')
-    parser.add_argument('--sort', '-s', action='store_true', default='False', help='Sort by decreasing ID')
+    parser.add_argument('--sort', '-s', action='store_true', dest='sort', default=False, help='Sort by decreasing ID')
     args = parser.parse_args(argv[1:])
 
 
@@ -133,6 +142,7 @@ def main(argv=None):
     else :
         pickleFilename = basetag + '.pickle'
 
+    lower   = args.lower
     nnotice = args.notice
     sortem  = args.sort
 
@@ -143,7 +153,7 @@ def main(argv=None):
     if args.injson :
 
         print 'Reading JSON file {}'.format(args.injson)
-        with codecs.open(args.injson, 'r') as inp :
+        with codecs.open(args.injson, 'rb') as inp :
             tweets = json.load(inp)
 
         total = len(tweets)
@@ -179,6 +189,9 @@ def main(argv=None):
             group   = returns['statuses']
 
             if len(group) == 0 : break
+            group = [x for x in group if x['id'] > lower]
+            if len(group) == 0 : break
+
             tweets.extend(group)
             total += len(group)
             if total % nnotice == 0 : print total
@@ -201,7 +214,7 @@ def main(argv=None):
 
     if outputJSON :
         print 'Writing JSON file {}'.format(jsonFilename)
-        with codecs.open(jsonFilename, 'w', 'utf-8') as out :
+        with codecs.open(jsonFilename, 'wb', 'utf-8') as out :
             json.dump(tweets, out, indent=4, encoding='utf-8')
 
     if outputCSV :
@@ -213,7 +226,7 @@ def main(argv=None):
         with codecs.open(csvFilename, mode='w', encoding='utf-8') as out :
             out.write('%s,%s,%s,%s,%s,%s,%s\n' % ('Tweet ID', 'Screen Name', 'Name', 'Time-Stamp', 'Retweets', 'Favorites', 'Text'))
             for tweet in tweets :
-                id     = tweet['id']
+                id     = tweet['id_str']
                 when   = tweet['created_at']
 
                 # User is a structure within a tweet that contains
@@ -243,7 +256,7 @@ def main(argv=None):
                 text = re_crlf.sub(r' ', text)
                 text = '"' + text + '"'
 
-                out.write('%d,%s,%s,%s,%d,%d,%s\n' % (id, screen, name, when, rts, favs, text))
+                out.write('%s,%s,%s,%s,%d,%d,%s\n' % (id, screen, name, when, rts, favs, text))
 
 
 if __name__ == "__main__":
