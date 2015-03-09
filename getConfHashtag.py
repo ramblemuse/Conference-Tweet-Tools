@@ -40,7 +40,7 @@
 #   Sat, 08 March 2015
 #       Added 'lower' argument on tweet IDs
 #       Corrected default on the 'sort' argument
-#		Now write tweet ID in CSV using 'id_str" field rather than 'id'
+#       Now writes tweet ID in CSV using 'id_str" field rather than 'id'
 #   Tue, 03 March 2015
 #
 # *****************************************************************************
