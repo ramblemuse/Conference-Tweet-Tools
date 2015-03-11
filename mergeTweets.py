@@ -1,12 +1,25 @@
 #
 # *****************************************************************************
 #   This script merges the tweets in two files, .json and/or .pickle created
-#	by getConfTweets.py The output is either a .json or .pickle file or both.
+#   by getConfTweets.py The output is either a .json or .pickle file or both.
 #
-#	Simplest Usage: python mergeTweets.py FILENAME1 FILENAME2
+#   Simplest Usage: python mergeTweets.py FILENAME1 FILENAME2
+#
+#   options:
+#       -h | --help   Print help information
+#       -p | --pickle PICKLE-FILENAME
+#       -j | --json   JSON-FILENAME
+#       -s | --sort   Sort the tweets in descending tweet ID
+#       --nojson      No JSON output (default is output)
+#       --nopickle    No pickle file output (default is output)
 #
 #   Keith Eric Grant (keg@ramblemuse.com)
-#   Sat, 07 March 2015
+#   Tue, 10 Mar 2015
+#       Removed import of base64 (not used)
+#       Added version variable to globals
+#       Added comments on options
+#       Added option for ascending sort
+#   Sat, 07 Mar 2015
 #
 # *****************************************************************************
 
@@ -16,9 +29,9 @@ import argparse
 import simplejson as json
 import codecs
 import pickle
-import base64
 
 myName = 'mergeTweets'
+version = '1.0.1'
 
 def main(argv=None):
     if argv is None:
@@ -27,7 +40,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(
         prog=myName,
         description='Parse filenames and options for merging tweet files',
-        version='1.0.0')
+        version=version)
 
     parser.add_argument('fn0', help='Name of first file to merge')
     parser.add_argument('fn1', help='Name of second file to merge')
@@ -36,6 +49,7 @@ def main(argv=None):
     parser.add_argument('--nojson', action='store_true', default=False, help='No JSON output')
     parser.add_argument('--nopickle', action='store_true', default=False, help='No pickle output')
     parser.add_argument('--sort', '-s', action='store_true', dest='sort', default=False, help='Sort by decreasing ID')
+    parser.add_argument('--ascend', '-a', action='store_true', dest='ascend', default=False, help='Use ascending sort')
     args = parser.parse_args(argv[1:])
 
     if args.pickle :
@@ -46,8 +60,9 @@ def main(argv=None):
         jsonFilename = args.json
     else :
         jsonFilename = 'mergedTweets.json'
-		
-    sortem  = args.sort	
+
+    sortem       = args.sort
+    descSort     = not args.ascend
     outputJSON   = not args.nojson
     outputPickle = not args.nopickle
 
@@ -82,7 +97,7 @@ def main(argv=None):
 
     if sortem :
         print 'Sorting tweets'
-        tweets.sort(key=lambda x: x['id'], reverse=True)
+        tweets.sort(key=lambda x: x['id'], reverse=descSort)
 
     if outputPickle :
         print 'Writing pickle file {}'.format(pickleFilename)
