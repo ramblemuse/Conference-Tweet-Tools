@@ -37,11 +37,14 @@
 #   is provided to only fetch tweets since a prior tweet search.
 #
 #   Keith Eric Grant (keg@ramblemuse.com)
-#   Sat, 08 March 2015
+#   Tue, 10 Mar 2015
+#       Added option for ascending sort
+#       Used conditional statement for output filenames
+#   Sat, 08 Mar 2015
 #       Added 'lower' argument on tweet IDs
 #       Corrected default on the 'sort' argument
 #       Now writes tweet ID in CSV using 'id_str" field rather than 'id'
-#   Tue, 03 March 2015
+#   Tue, 03 Mar 2015
 #
 # *****************************************************************************
 
@@ -119,6 +122,7 @@ def main(argv=None):
     parser.add_argument('--injson',   action='store', help='Load specified JSON file instead of search')
     parser.add_argument('--inpickle', action='store', help='Load specified pickle file instead of search')
     parser.add_argument('--sort', '-s', action='store_true', dest='sort', default=False, help='Sort by decreasing ID')
+    parser.add_argument('--ascend', '-a', action='store_true', dest='ascend', default=False, help='Use ascending sort')
     args = parser.parse_args(argv[1:])
 
 
@@ -129,23 +133,14 @@ def main(argv=None):
         basetag = hashtag
         hashtag = '#' + hashtag
 
-    if args.csv :
-        csvFilename = args.csv
-    else :
-        csvFilename = basetag + '.csv'
-    if args.json :
-        jsonFilename = args.json
-    else :
-        jsonFilename = basetag + '.json'
-    if args.pickle :
-        pickleFilename = args.pickle
-    else :
-        pickleFilename = basetag + '.pickle'
+    csvFilename    = args.csv if args.csv else basetag + '.csv'
+    jsonFilename   = args.json if args.json else basetag + '.json'
+    pickleFilename = args.pickle if args.pickle else basetag + '.pickle'
 
-    lower   = args.lower
-    nnotice = args.notice
-    sortem  = args.sort
-
+    lower        = args.lower
+    nnotice      = args.notice
+    sortem       = args.sort
+    descSort     = not args.ascend
     outputCSV    = not args.nocsv
     outputJSON   = not args.nojson
     outputPickle = not args.nopickle
@@ -205,7 +200,7 @@ def main(argv=None):
 
     if sortem :
         print 'Sorting tweets'
-        tweets.sort(key=lambda x: x['id'], reverse=True)
+        tweets.sort(key=lambda x: x['id'], reverse=descSort)
 
     if outputPickle :
         print 'Writing pickle file {}'.format(pickleFilename)
