@@ -1,15 +1,18 @@
 
 # *****************************************************************************
 #   This routine filters out unedited retweets created using the Twitter
-#   retweet capability.
+#   retweet capability. The input is a JSON or Python pickle file of
+#   tweets captured by getConfHashtag.py The output is a filtered JSON or
+#   pickle file or both (default)
 #
-#   Simplest usage: python filterRetweets.py
+#   Simplest usage: python filterRetweets.py INPUT-FILENAME
 #
 #   options:
 #       -h | --help   Print help information
 #       -p | --pickle PICKLE-FILENAME
 #       -j | --json   JSON-FILENAME
 #       -s | --sort   Sort the tweets in descending tweet ID
+#       -a | --ascend Use ascending order if sort  is selected
 #       --nojson      No JSON output (default is output)
 #       --nopickle    No pickle file output (default is output)
 #
