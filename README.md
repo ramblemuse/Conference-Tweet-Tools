@@ -9,4 +9,12 @@ Tools for gathering and analyzing tweets from conferences and chat-ups. This inc
 
 * **filterRetweets.py** --- Read in a saved tweet file, either pickle or JSON, and filter out unedited retweets posted using the Twitter retweet capability. Save the filtered tweets as a Python pickle file, JSON, or both.  Tweets can be sorted before saving.
 
-* **writeCSV.py** ---  Create a summary in comma separated value format (CSV) with the tweet ID, the poster's name and screen name, the timestamp, the number of retweets, the number of favorites, and the text of each tweet. 
+* **writeCSV.py** ---  Create a summary in comma separated value format (CSV) with the tweet ID, the poster's name and screen name, the timestamp, the number of retweets, the number of favorites, and the text of each tweet.
+
+
+## Resources
+
+* [Python Natural Language Toolkit](http://www.nltk.org/) (NLTK)
+* [SixOhSix's Python wrapper](https://github.com/sixohsix/twitter) for the Twitter API
+* [NetworkX](http://networkx.github.io/)
+* [Mining the Social Web](http://shop.oreilly.com/product/0636920030195.do), 2nd ed.
