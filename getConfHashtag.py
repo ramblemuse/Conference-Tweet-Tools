@@ -11,6 +11,9 @@
 #   JSON file and/or a Python pickle file. It can also create a JSON file
 #   from an input pickle file and vice versa. Tested with Python 2.7.9
 #
+#   This routine imports SixOhSix's Python interface to the Twitter API
+#   See https://github.com/sixohsix/twitter
+#
 #   Minumum input usage: python getConfHashtag.py #hashtag
 #
 #   options:
