@@ -1,4 +1,4 @@
-#
+
 # *****************************************************************************
 #   This is a command-line Python program written as an aid for capturing
 #   conference tweets for later analysis. Twitter's searches for hashtags
@@ -8,10 +8,8 @@
 #   word-frequency and/or other aspects of the tweet record.
 #
 #   This program can capture the tweet record of a conference or chat as a
-#   JSON file and/or a Python pickle file. It can also create a summary with
-#   the tweet ID, poster's name and screen-name, time-stamp, and text of the
-#   tweets as a comma separated value (CSV) file that can easily be imported
-#   into Excel.
+#   JSON file and/or a Python pickle file. It can also create a JSON file
+#   from an input pickle file and vice versa. Tested with Python 2.7.9
 #
 #   Minumum input usage: python getConfHashtag.py #hashtag
 #
@@ -23,20 +21,25 @@
 #       -l | --lower  Set lower limit on tweet ID's
 #       -n | --notice COUNT (default progress notice every 100 tweets)
 #       -s | --sort   Sort the tweets in descending tweet ID
-#       --nocsv       No CSV output (default is output)
+#       -a | --ascend Use ascending order if sort  is selected
 #       --nojson      No JSON output (default is output)
 #       --nopickle    No pickle file output (default is output)
 #       --injson      JSON-FILENAME (input from an existing JSON file)
 #       --inpickle    PICKLE-FILENAME (Input from an existing pickle file)
 #
 #   If output filenames aren't given, the hashtag (without the hash) is used
-#   as a basename. For input from a previously created pickle file, no search
+#   as a basename. For input from a previously created pickle or file, no search
 #   is done and the given hashtag is still used for an output file basename.
 #
 #   Lower and upper limits on tweet ID's are non-inclusive. The lower argument
 #   is provided to only fetch tweets since a prior tweet search.
 #
 #   Keith Eric Grant (keg@ramblemuse.com)
+#   Fri, 13 Mar 2015
+#       Moved CSV writing capability to writeCSV.py to focus this tool on
+#       collecting tweets.
+#       Print the maximum tweet ID for use as the lower argument in later
+#       searches.
 #   Tue, 10 Mar 2015
 #       Added option for ascending sort
 #       Used conditional statement for output filenames
@@ -111,11 +114,9 @@ def main(argv=None):
         version='1.0.1')
     parser.add_argument('hashtag', help='hashtag to search for, including #')
     parser.add_argument('--pickle', '-p', action='store', dest='pickle', help='Pickle output file name')
-    parser.add_argument('--csv',    '-c', action='store', dest='csv', help='CSV output file name')
     parser.add_argument('--json',   '-j', action='store', dest='json', help='JSON output file name')
     parser.add_argument('--lower',  '-l', action='store', dest='lower',  type=int, default = 0, help='Set lower limit on tweet IDs')
     parser.add_argument('--notice', '-n', action="store", dest='notice', type=int, default=100, help='Print processing count every n tweets')
-    parser.add_argument('--nocsv',    action='store_true', default=False, help='No csv output')
     parser.add_argument('--nojson',   action='store_true', default=False, help='No JSON output')
     parser.add_argument('--nopickle', action='store_true', default=False, help='No pickle output')
     parser.add_argument('--nonotice', action='store_true', default=False, help='No processing count notices')
@@ -133,15 +134,13 @@ def main(argv=None):
         basetag = hashtag
         hashtag = '#' + hashtag
 
-    csvFilename    = args.csv if args.csv else basetag + '.csv'
-    jsonFilename   = args.json if args.json else basetag + '.json'
+    jsonFilename   = args.json   if args.json   else basetag + '.json'
     pickleFilename = args.pickle if args.pickle else basetag + '.pickle'
 
     lower        = args.lower
     nnotice      = args.notice
     sortem       = args.sort
     descSort     = not args.ascend
-    outputCSV    = not args.nocsv
     outputJSON   = not args.nojson
     outputPickle = not args.nopickle
 
@@ -196,7 +195,10 @@ def main(argv=None):
             # Twitter rate limit for searches is 180 calls/ 15 minutes
             time.sleep(0.25)
 
-    print '{} tweets'.format(total)
+    # Write out the total tweets and the maximum tweet ID. The latter
+    # is for use as the lower argument in a subsequent search.
+    maxID = max([tweet['id'] for tweet in tweets])
+    print '{} tweets. Uppermost ID saved: {}'.format(total, maxID)
 
     if sortem :
         print 'Sorting tweets'
@@ -211,48 +213,6 @@ def main(argv=None):
         print 'Writing JSON file {}'.format(jsonFilename)
         with codecs.open(jsonFilename, 'wb', 'utf-8') as out :
             json.dump(tweets, out, indent=4, encoding='utf-8')
-
-    if outputCSV :
-        print 'Writing CSV file {}'.format(csvFilename)
-
-        re_crlf  = re.compile("\n|\r+")
-        re_dquo  = re.compile(r'"')
-
-        with codecs.open(csvFilename, mode='w', encoding='utf-8') as out :
-            out.write('%s,%s,%s,%s,%s,%s,%s\n' % ('Tweet ID', 'Screen Name', 'Name', 'Time-Stamp', 'Retweets', 'Favorites', 'Text'))
-            for tweet in tweets :
-                id     = tweet['id_str']
-                when   = tweet['created_at']
-
-                # User is a structure within a tweet that contains
-                # the poster's screen name and full name.
-                user   = tweet['user']
-                name   = unicode(user['name'])
-                name   = re_dquo.sub(r'""', name)
-                name   = '"' + name + '"'
-                screen = user['screen_name']
-
-                # The retweet and favorite counts aren't always
-                # present, so they need a check and default
-                if 'retweet_count' in tweet :
-                    rts = tweet['retweet_count']
-                else :
-                    rts = 0
-                if 'favorite_count' in tweet :
-                    favs = tweet['favorite_count']
-                else :
-                    favs = 0
-
-                # Convert the text string to a Unicode string, protect any
-                # internal double quotes, remove any contained newlines,
-                # and enclose in double quotes to protect any internal commas.
-                text = unicode(tweet['text'])
-                text = re_dquo.sub(r'""', text)
-                text = re_crlf.sub(r' ', text)
-                text = '"' + text + '"'
-
-                out.write('%s,%s,%s,%s,%d,%d,%s\n' % (id, screen, name, when, rts, favs, text))
-
 
 if __name__ == "__main__":
     sys.exit(main())
