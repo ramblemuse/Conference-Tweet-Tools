@@ -11,6 +11,15 @@ Tools for gathering and analyzing tweets from conferences and chat-ups. This inc
 
 * **writeCSV.py** ---  Create a summary in comma separated value format (CSV) with the tweet ID, the poster's name and screen name, the timestamp, the number of retweets, the number of favorites, and the text of each tweet.
 
+* **HTML Display**
+
+  * **writeHTML.py** --- Reads a JSON or Python pickle file of tweets and writes the basic tweet to an HTML file with optional sorting.
+  
+  * **htmlWrapper.py** --- Transforms writing HTML into working with Python objects. Used by writeHTML.py
+  
+  * **tweet_sheet.css** --- CSS file for displaying HTML output from writeHTML.py
+  
+  * **imageHandler.js** --- Replaces temporary images used to speed page-loading with the real images from Twitter. Also adds a pop-up image that appears when the thumbnail image is hovered over, scaling it appropriately. for the viewport.
 
 ## Resources
 
