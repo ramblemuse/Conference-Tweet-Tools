@@ -1,0 +1,161 @@
+/*******************************************************************************
+*   This is the CSS style sheet for the HTML files of tweets generated using
+*   writeHTML.py The styling is designed to be responsive to the viewport 
+*   width of the device being used to view the HTML. Successful viewing
+*   also depends of the Javascript file imageHandler.js
+*   
+*   Keith Eric Grant (keg@ramblemuse.com)
+*   02 Apr 2015
+*******************************************************************************/
+body {
+	font-family: 'Quattrocento', serif;
+	background-color: #003300;
+}
+
+#masthead {
+   background-color: #ffffd0;
+   color: #003300;
+   text-align: center;
+   width: 96%;
+   max-width: 800px;
+   margin: 0.5em auto;
+   padding: 0.5em;
+   border: 4px solid #cc9900;
+   border-radius: 0.5em;
+   -webkit-border-radius: 0.5em;
+   font-weight: bold;
+   font-style: italic;
+}
+
+#masthead #headline { font-size: 2.0em }
+#masthead #tagline { font-size: 1.5em; }
+
+#container {
+   background-color: #cc9900;
+   width: 96%;
+   max-width: 800px;
+   margin: 0.5em auto;
+   padding: 0.5em;
+   border: 4px solid white;
+   border-radius: 0.5em;
+   -webkit-border-radius: 0.5em;
+}
+
+#tweets {
+   position: relative;
+   background-color: #efffef;
+   color: #003300;
+   padding: 0.35em 0.5em;
+   border: 4px solid #999999;
+   margin: 0 auto;
+   border-radius: 0.5em;
+   -webkit-border-radius: 0.5em;
+}
+
+.tweet, .remark {
+   margin: 0.5em 0;
+   padding-top: 0.5em;
+   border-top: 2px solid #cc9900;
+ }
+ 
+.tweet:first-child, .remark:first-child {
+   padding-top: 0;
+   border-top: none;
+}
+
+.remark {
+   font-size: 1.125em;
+   font-style: italic;
+   font-weight: bolder;
+}   
+
+
+/* The following is the clearfix method on taming floats. See */
+/* http://learn.shayhowe.com/advanced-html-css/detailed-css-positioning/ */
+/* https://css-tricks.com/snippets/css/clear-fix/ */
+
+.tweet:before, .tweet:after {
+   content: "";
+   display: table;
+}
+.tweet:after { clear: both; }
+   
+
+.timestamp {
+   font-weight: bold;
+   margin: 0.15em 0;
+}
+
+.thumbnail {
+   float: right;
+   margin: 0.0em;
+   width: 12.5%;
+   height: auto;
+}
+
+.picture {
+   display: none;
+   position: absolute;
+   z-index: 3;
+   border: 2px solid #cc9900;
+}
+
+
+.posterimg {
+   overflow: auto;
+   background-color: #cc9900;
+   padding: 2px;
+   margin: 0 0.5em 0 0;
+   border: 2px solid #003300;
+   float:left;
+   width: 6.5%;
+   height: auto; 
+   max-width: 48px;
+}
+
+.posterimg img {
+   margin: 0;
+   border: none;
+   width: 100%;
+   height: 100%;
+   vertical-align: middle;
+}
+
+
+/* The sequencer class in for sequencing multiple files */
+	
+	table.sequencer {
+	  width: 96%;
+	  margin: 0 auto;
+	  padding: 0;
+	  font-size: 1.25em;
+	  font-weight: bold;
+	}
+	
+	table.sequencer td {
+	  margin:  0;
+	  padding: 0;
+	  text-align: center;
+	  width: 20%;
+	}
+	
+	table.sequencer td:first-child {
+	  width: 40%;
+	  text-align: right;
+	}
+	
+	table.sequencer td:last-child {
+	  width: 40%;
+	  text-align: left;
+	}
+	
+	table.sequencer a {
+	  text-decoration: none;
+	}
+	
+	table.sequencer span {
+	  font-style: normal;
+	  font-size: 1.75em; 
+	  vertical-align: -0.075em
+	}
+   
