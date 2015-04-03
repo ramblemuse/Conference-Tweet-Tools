@@ -38,6 +38,11 @@
 #   is provided to only fetch tweets since a prior tweet search.
 #
 #   Keith Eric Grant (keg@ramblemuse.com)
+#   Tue, 02 Apr 2015
+#       Catch exceptions from API query
+#       Corrected one-off error in calculation of 'upper'
+#       Included 'lower' directly into the query
+#       Corrected sleep time for 450 queries per 15 minutes
 #   Fri, 13 Mar 2015
 #       Moved CSV writing capability to writeCSV.py to focus this tool on
 #       collecting tweets.
@@ -182,21 +187,24 @@ def main(argv=None):
             # tweet in the returns as the next "upper" limit on the tweet ID. On
             # each iteration the new group of tweets extends a cumulative list.
 
-            returns = api.search.tweets(q=hashtag, count=100, max_id=upper)
-            group   = returns['statuses']
+            try :
+                returns = api.search.tweets(q=hashtag, count=100, max_id=upper, since_id=lower)
+                group = returns['statuses'] if 'statuses' in returns else []
+            except :
+                print "Unexpected error:", sys.exc_info()[0]
 
-            if len(group) == 0 : break
-            group = [x for x in group if x['id'] > lower]
             if len(group) == 0 : break
 
             tweets.extend(group)
             total += len(group)
             if total % nnotice == 0 : print total
 
-            upper = group[len(group)-1]['id']
+            # The next query will return results with an ID less than (that is,
+            # older than) or equal to the specified ID.
+            upper = min([x['id'] for x in group]) - 1
 
-            # Twitter rate limit for searches is 180 calls/ 15 minutes
-            time.sleep(0.25)
+            # Twitter rate limit for searches is 450 calls/ 15 minutes
+            time.sleep(2.0)
 
     # Write out the total tweets and the maximum tweet ID. The latter
     # is for use as the lower argument in a subsequent search.
