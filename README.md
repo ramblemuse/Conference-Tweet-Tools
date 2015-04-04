@@ -19,7 +19,9 @@ Tools for gathering and analyzing tweets from conferences and chat-ups. This inc
   
   * **tweet_sheet.css** --- This is the CSS stylesheet for displaying the HTML output from writeHTML.py
   
-  * **imageHandler.js** --- This contains the Javascript routines for displaying the HTML output from writeHTML.py. The routines temporary images used to speed page-loading with the real images from Twitter. they also add a pop-up image to the DOM that appears when the thumbnail image is hovered over, scaling it appropriately. for the viewport.
+  * **imageHandler.js** --- This file contains the Javascript routines for displaying the HTML output from writeHTML.py. The routines temporary images used to speed page-loading with the real images from Twitter. they also add a pop-up image to the DOM that appears when the thumbnail image is hovered over, scaling it appropriately. for the viewport.
+  
+  * For examples of the HTML produced, view the tweets from these [captured conferences](http://www.ramblemuse.com/conference_tweets/). The HTML has been designed to be viewport responsive for mobile as well as desktop/laptop readability.
 
 ## Resources
 
