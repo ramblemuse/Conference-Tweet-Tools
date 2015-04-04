@@ -5,18 +5,22 @@
 *   also depends of the Javascript file imageHandler.js
 *   
 *   Keith Eric Grant (keg@ramblemuse.com)
-*   02 Apr 2015
+*   03 Apr 2015
 *******************************************************************************/
+
 body {
 	font-family: 'Quattrocento', serif;
 	background-color: #003300;
+	margin: 0;
+	padding: 0;
 }
 
 #masthead {
+	 overflow: hidden;
    background-color: #ffffd0;
    color: #003300;
    text-align: center;
-   width: 96%;
+   width: 90%;
    max-width: 800px;
    margin: 0.5em auto;
    padding: 0.5em;
@@ -31,8 +35,9 @@ body {
 #masthead #tagline { font-size: 1.5em; }
 
 #container {
+	 overflow: hidden;
    background-color: #cc9900;
-   width: 96%;
+   width: 90%;
    max-width: 800px;
    margin: 0.5em auto;
    padding: 0.5em;
