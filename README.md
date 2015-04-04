@@ -17,9 +17,9 @@ Tools for gathering and analyzing tweets from conferences and chat-ups. This inc
   
   * **htmlWrapper.py** --- Transforms writing HTML into working with Python objects. Used by writeHTML.py
   
-  * **tweet_sheet.css** --- CSS file for displaying HTML output from writeHTML.py
+  * **tweet_sheet.css** --- This is the CSS stylesheet for displaying the HTML output from writeHTML.py
   
-  * **imageHandler.js** --- Replaces temporary images used to speed page-loading with the real images from Twitter. Also adds a pop-up image that appears when the thumbnail image is hovered over, scaling it appropriately. for the viewport.
+  * **imageHandler.js** --- This contains the Javascript routines for displaying the HTML output from writeHTML.py. The routines temporary images used to speed page-loading with the real images from Twitter. they also add a pop-up image to the DOM that appears when the thumbnail image is hovered over, scaling it appropriately. for the viewport.
 
 ## Resources
 
