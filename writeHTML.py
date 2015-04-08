@@ -6,7 +6,9 @@
 #   itself depends the CSS stylesheet 'tweet_sheet.css' and the Javascript
 #   file 'imageHandler.js'. The HTML produced is screen-size responsive.
 #
-#   Keith Eric Grant (keg@ramblemuse.com)
+#   Keith Eric Grant (keg@ramblemuse.com
+#   08 April 2015
+#      The tweet poster's screen name now links to their Twitter page.  
 #   02 April 2015
 #
 # ******************************************************************************
@@ -129,7 +131,9 @@ def main(argv=None):
 
         # Add the line with the poster's screen-name, the time-stamp, and posting software
         doc_timestamp = doc_tweet.add_element('div', ('class="timestamp"',))
-        doc_timestamp.add_text(u'@{}, {}, via {}'.format(unicode(tweet['user']['screen_name']),unicode(tweet['created_at']),unicode(tweet['source'])))
+        screen_name = u'<a href="https://twitter.com/{0}">@{0}</a>'.format(unicode(tweet['user']['screen_name']))
+        doc_timestamp.add_text(u'{}, {}, via {}'.format(screen_name,\
+           unicode(tweet['created_at']),unicode(tweet['source'])))
         doc_timestamp.close()
 
         # Get the text of the tweet. If it's a retweet, get the full text from
