@@ -38,6 +38,9 @@
 #   is provided to only fetch tweets since a prior tweet search.
 #
 #   Keith Eric Grant (keg@ramblemuse.com)
+#   Sun, 18 Oct 2015
+#       Modified so count continues to be output after return of fewer
+#       than 100 tweets in a request (i.e. can't use mod function).
 #   Tue, 02 Apr 2015
 #       Catch exceptions from API query
 #       Corrected one-off error in calculation of 'upper'
@@ -176,8 +179,9 @@ def main(argv=None):
         api = twitter.Twitter(auth=twitter.OAuth2(bearer_token=getAppToken()))
 
         print 'Searching Twitter for {}'.format(hashtag)
-        upper = None
-        total = 0
+        upper  = None
+        total  = 0
+        nxtout = total + nnotice
 
         tweets = []
         while (True) :
@@ -197,7 +201,9 @@ def main(argv=None):
 
             tweets.extend(group)
             total += len(group)
-            if total % nnotice == 0 : print total
+            if total >= nxtout :
+                nxtout = total + nnotice
+                print total
 
             # The next query will return results with an ID less than (that is,
             # older than) or equal to the specified ID.
