@@ -3,14 +3,15 @@
 #   These classes provide a Python object wrapper for writing indented HTML5.
 #   Objects are created from a tag and an optional list or tuple of attributes.
 #
-#   Keith Eric Grant (keg@ramblemuse.com
-#   02 April 2015
+#	Keith Eric Grant (keg@ramblemuse.com) -- 04 Jul 2015
+#		Changed strings to Unicode strings
+#   Keith Eric Grant (keg@ramblemuse.com) -- 02 Apr 2015
 #*******************************************************************************
 
 class element :
     """General class for tagged elements with optional attributes"""
 
-    indent = '  '
+    indent = u'  '
     threshold = 81
 
     def __init__(self, tag, parent=None, attributes=None) :
@@ -18,16 +19,16 @@ class element :
         self.tag = tag;
         self.contents = []
         if attributes :
-            self.contents.append('<{} {}>'.format(tag, ' '.join(attributes)))
+            self.contents.append(u'<{} {}>'.format(tag, ' '.join(attributes)))
         else :
-            self.contents.append('<{}>'.format(tag))
+            self.contents.append(u'<{}>'.format(tag))
 
     def add_selfclose(self, tag, attributes=None) :
         """Add a self-closing element"""
         if attributes :
-            self.contents.append('<{} {} />'.format(tag, ' '.join(attributes)))
+            self.contents.append(u'<{} {} />'.format(tag, ' '.join(attributes)))
         else :
-            self.contents.append('<{} />'.format(tag))
+            self.contents.append(u'<{} />'.format(tag))
 
     def add_element(self, tag, attributes=None) :
         """Add an element which may contain other elements"""
@@ -42,7 +43,7 @@ class element :
         """Close an open element, adding its closing tag, doing some
         formatting, and appending its contents onto its parent's contents"""
 
-        self.contents.append("</{}>".format(self.tag))
+        self.contents.append(u"</{}>".format(self.tag))
 
         # If the elements total line-length will be less than a threshold,
         # just combine everything on one line. Otherwise, indent all of
@@ -68,11 +69,11 @@ class document (element) :
 
     def __init__(self) :
         self.parent = None
-        self.tag = 'html'
+        self.tag = u'html'
         self.contents = []
-        self.contents.append('<html lang="en">')
+        self.contents.append(u'<html lang="en">')
 
     def write(self,out) :
-        out.write("<!DOCTYPE html>\n")
-        out.write("\n".join(self.contents) + "\n")
+        out.write(u"<!DOCTYPE html>\n")
+        out.write(u"\n".join(self.contents) + "\n")
 

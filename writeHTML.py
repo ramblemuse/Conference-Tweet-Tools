@@ -7,9 +7,11 @@
 #   file 'imageHandler.js'. The HTML produced is screen-size responsive.
 #
 #   Keith Eric Grant (keg@ramblemuse.com
-#   08 April 2015
+#   04 Jul 2015
+#      Switched from codecs module to io module for opens with UTF-8.
+#   08 Apr 2015
 #      The tweet poster's screen name now links to their Twitter page.  
-#   02 April 2015
+#   02 Apr 2015
 #
 # ******************************************************************************
 
@@ -17,7 +19,7 @@ import sys
 import os
 import argparse
 import simplejson as json
-import codecs
+import io
 import pickle
 import re
 import htmlWrapper
@@ -50,7 +52,7 @@ def main(argv=None):
     # Load tweets from the input file, whether JSON or pickle.
     ext = os.path.splitext(inpfile)[1].lower()
     if ext == '.json' :
-        with codecs.open(inpfile, 'rb', 'utf-8') as inp :
+        with io.open(inpfile, 'r') as inp :
             tweets = json.load(inp)
     elif ext == '.pickle' :
         with open(inpfile, 'rb') as inp :
@@ -159,7 +161,7 @@ def main(argv=None):
     doc.close()
 
     # Write it
-    with codecs.open(htmlfile, 'w', encoding='utf-8') as out :
+    with io.open(htmlfile, 'w', encoding='utf-8') as out :
         doc.write(out)
 
 
