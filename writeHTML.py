@@ -7,10 +7,13 @@
 #   file 'imageHandler.js'. The HTML produced is screen-size responsive.
 #
 #   Keith Eric Grant (keg@ramblemuse.com
+#   10 Oct 2015
+#      Added support for quoted tweets, motivating the new 
+#      routine 'tweetContents'
 #   04 Jul 2015
 #      Switched from codecs module to io module for opens with UTF-8.
 #   08 Apr 2015
-#      The tweet poster's screen name now links to their Twitter page.  
+#      The tweet poster's screen name now links to their Twitter page.
 #   02 Apr 2015
 #
 # ******************************************************************************
@@ -27,6 +30,51 @@ import htmlWrapper
 
 myName  = 'writeHTML.py'
 version = '1.0.1'
+
+
+# Set up a regular expression to catch retweets and avoid possible truncation
+re_text = re.compile(r'RT\s+@[_a-zA-Z0-9]+:\s')
+
+# Set up a regular expression to catch URLs in the text
+urlre = re.compile(r'((?:https?|ftp|file):\/\/(?:[^\s"]+))')
+
+
+def tweetContents (doc_tweet, tweet) :
+
+	# If the tweet has an image, add a thumbnail image element to
+	# the HTML, loading a temporary image as 'src' and writing the
+	# real image URL into the HTML5 data-src attribute. Javascript
+	# will load the real image after page-load.
+
+	if 'media' in tweet['entities'] :
+		image = tweet['entities']['media'][0]
+		imgurl = image['media_url']
+		doc_tweet.add_selfclose('img', ('class="thumbnail"', \
+			'src="../images/tempload_thumb.png"', \
+			'data-src="{}:thumb"'.format(imgurl), \
+			'alt="thumbnail"'))
+
+	# Add the line with the poster's screen-name, the time-stamp, and posting software
+	doc_timestamp = doc_tweet.add_element('div', ('class="timestamp"',))
+	screen_name = u'<a href="https://twitter.com/{0}">@{0}</a>'.format(tweet['user']['screen_name'])
+	doc_timestamp.add_text(u'{}, {}, via {}'.format(screen_name,\
+	   tweet['created_at'],tweet['source']))
+	doc_timestamp.close()
+
+	# Get the text of the tweet. If it's a retweet, get the full text from
+	# the RT status and prepend the RT and poster screen_name. This avoids
+	# truncated RTs.
+
+	doc_divtxt = doc_tweet.add_element('div', ('class="tweettxt"',))
+	text = tweet['text']
+	isrt = re_text.match(text)
+	if isrt and 'retweeted_status' in tweet :
+		text = isrt.group() + tweet['retweeted_status']['text']
+
+	# Place URLs within a link, add the text, and close the tweet text
+	text = re.sub(urlre, r'<a href="\1">\1</a>', text)
+	doc_divtxt.add_text(text)
+	doc_divtxt.close()
 
 
 def main(argv=None):
@@ -67,13 +115,6 @@ def main(argv=None):
         print 'Sorting tweets'
         tweets.sort(key=lambda x: x['id'], reverse=descSort)
 
-    # Set up a regular expression to catch retweets and avoid possible truncation
-    re_text = re.compile(r'RT\s+@[_a-zA-Z0-9]+:\s')
-
-    # Set up a regular expression to catch URLs in the text
-    urlre = re.compile(r'((?:https?|ftp|file):\/\/(?:[^\s"]+))')
-
-
     doc   = htmlWrapper.document()
 
     # HTML Head Element
@@ -110,19 +151,6 @@ def main(argv=None):
     for tweet in tweets :
         doc_tweet = doc_tweets.add_element('div', ('class="tweet"',))
 
-        # If the tweet has an image, add a thumbnail image element to
-        # the HTML, loading a temporary image as 'src' and writing the
-        # real image URL into the HTML5 data-src attribute. Javascript
-        # will load the real image after page-load.
-
-        if 'media' in tweet['entities'] :
-            image = tweet['entities']['media'][0]
-            imgurl = image['media_url']
-            doc_tweet.add_selfclose('img', ('class="thumbnail"', \
-                'src="../images/tempload_thumb.png"', \
-                'data-src="{}:thumb"'.format(imgurl), \
-                'alt="thumbnail"'))
-
         # Handle the user icon as with the image above, so that loading of
         # the real icons is delayed until after page-load.
 
@@ -130,28 +158,17 @@ def main(argv=None):
         doc_icon.add_selfclose('img', ('src="../images/tempload_icon.png"', \
             'data-src="{}"'.format(tweet['user']['profile_image_url']), 'alt="user\'s icon"'))
         doc_icon.close()
+		
+        tweetContents (doc_tweet, tweet)
 
-        # Add the line with the poster's screen-name, the time-stamp, and posting software
-        doc_timestamp = doc_tweet.add_element('div', ('class="timestamp"',))
-        screen_name = u'<a href="https://twitter.com/{0}">@{0}</a>'.format(unicode(tweet['user']['screen_name']))
-        doc_timestamp.add_text(u'{}, {}, via {}'.format(screen_name,\
-           unicode(tweet['created_at']),unicode(tweet['source'])))
-        doc_timestamp.close()
-
-        # Get the text of the tweet. If it's a retweet, get the full text from
-        # the RT status and prepend the RT and poster screen_name. This avoids
-        # truncated RTs.
-
-        doc_divtxt = doc_tweet.add_element('div', ('class="tweettxt"',))
-        text = tweet['text']
-        isrt = re_text.match(text)
-        if isrt and 'retweeted_status' in tweet :
-            text = isrt.group() + tweet['retweeted_status']['text']
-
-        # Place URLs within a link, add the text, and close the tweet
-        text = re.sub(urlre, r'<a href="\1">\1</a>', text)
-        doc_divtxt.add_text(text)
-        doc_divtxt.close()
+		# Handle a quoted tweet if present
+        if 'quoted_status' in tweet :
+            quoted = tweet['quoted_status']
+            doc_quote = doc_tweet.add_element('div', ('class="quote"',))			
+            tweetContents (doc_quote, quoted)
+            doc_quote.close()
+			
+        # Close the entire tweet
         doc_tweet.close()
 
     # Close-up the document elements

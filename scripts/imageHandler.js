@@ -12,6 +12,8 @@
 //
 //  Keith Eric Grant (keg@ramblemuse.com) -- 25 Mar 2015
 //  08 May 2015 - Added link to larger image to pictures
+//  19 Oct 2015 - Now get "tweets" element by ID rather than relative to
+//                the tweet in mouseEvent. Changed for quoted tweet support.
 //
 // *****************************************************************************
 
@@ -179,6 +181,7 @@ function addPictures () {
     }
 }
 
+
 function mouseImageEvent (event) {
 
     // Handle older IE or W3C event models. W3C event pass the event
@@ -195,7 +198,7 @@ function mouseImageEvent (event) {
 
     var link   = thumbnail.parentNode;
     var tweet  = link.parentNode;
-    var tweets = tweet.parentNode;
+    var tweets = document.getElementById('tweets');
     var image  = tweet.getElementsByClassName("picture")[0];
     var rmarg  = 0.85;
 
@@ -278,6 +281,7 @@ function setMouseHandler () {
     }
     return false;
 }
+
 
 addEvent (window, 'load', function () {addPictures ();  setMouseHandler ();} );
 addEvent (window, 'load', loadPosterIcons);

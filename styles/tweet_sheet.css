@@ -5,6 +5,8 @@
 *   also depends of the Javascript file imageHandler.js
 *   
 *   Keith Eric Grant (keg@ramblemuse.com)
+*   19 Oct 2015
+*      Added quote class for quoted tweets. Added bottom border to .posterimage
 *   03 Apr 2015
 *******************************************************************************/
 
@@ -84,7 +86,21 @@ body {
    display: table;
 }
 .tweet:after { clear: both; }
-   
+
+
+.quote {
+   clear: both;
+   margin-top: 0.5em;
+   border: 2px solid #003300;
+   padding: 0.25em;
+}
+
+.quote:before, .quote:after {
+   content: "";
+   display: table;
+}
+.quote:after { clear: both; }
+  
 
 .timestamp {
    font-weight: bold;
@@ -110,7 +126,7 @@ body {
    overflow: auto;
    background-color: #cc9900;
    padding: 2px;
-   margin: 0 0.5em 0 0;
+   margin: 0 0.5em 0.25em 0;
    border: 2px solid #003300;
    float:left;
    width: 6.5%;
@@ -133,7 +149,7 @@ body {
 	  width: 96%;
 	  margin: 0 auto;
 	  padding: 0;
-	  font-size: 1.25em;
+	  font-size: 1.15em;
 	  font-weight: bold;
 	}
 	
