@@ -1,0 +1,9 @@
+# Have Git ignore all the conference directories but not the
+# tweet-tools directories.
+*/
+!scripts/
+!styles/
+!images/
+
+# Ignore any compiled Python files
+*.pyc
